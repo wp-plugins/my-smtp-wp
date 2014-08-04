@@ -3,7 +3,7 @@
 Plugin Name: My SMTP WP
 Plugin URI: https://github.com/valeriosouza/my-smtp-wp
 Description: WP SMTP can help us to send emails via SMTP instead of the PHP mail() function.
-Version: 1.0.1
+Version: 1.0.2
 Author: Valerio Souza
 Author URI: http://valeriosouza.com.br
 Text Domain: my-smtp-mail
@@ -27,7 +27,20 @@ $wsOptions = get_option("my_smtp_wp_options");
 if($wsOptions["deactivate"]=="yes"){
 	register_deactivation_hook( __FILE__ , create_function('','delete_option("my_smtp_wp_options");') );
 }
+if ($wsOptions["returnpath"] == 'yes') {
+// Function return path fix
+class email_return_path {
+  	function __construct() {
+		add_action( 'phpmailer_init', array( $this, 'fix' ) );    
+  	}
 
+	function fix( $phpmailer ) {
+	  	$phpmailer->Sender = $phpmailer->From;
+	}
+}
+
+new email_return_path();
+}
 // Functions
 
 function load_my_smtp_wp_lang(){
@@ -51,6 +64,7 @@ function my_smtp_wp($phpmailer){
 	$phpmailer->Host = $wsOptions["host"];
 	$phpmailer->SMTPSecure = $wsOptions["smtpsecure"];
 	$phpmailer->Port = $wsOptions["port"];
+	$phpmailer->Returnpath = $wsOptions["returnpath"];
 	$phpmailer->SMTPAuth = ($wsOptions["smtpauth"]=="yes") ? TRUE : FALSE;
 	if($phpmailer->SMTPAuth){
 		$phpmailer->Username = $wsOptions["username"];
@@ -68,6 +82,7 @@ function my_smtp_wp_activate(){
 	$wsOptions["smtpauth"] = "yes";
 	$wsOptions["username"] = "";
 	$wsOptions["password"] = "";
+	$wsOptions["returnpath"] = "";
 	$wsOptions["deactivate"] = "";
 	add_option("my_smtp_wp_options",$wsOptions);
 }
