@@ -30,6 +30,16 @@ My SMTP WP
 	</tr>
 	<tr valign="top">
 		<th scope="row">
+			<?php _e('Reply To','my-smtp-mail'); ?>
+		</th>
+		<td>
+			<label>
+				<input type="text" name="my_smtp_reply_to" value="<?php echo $wsOptions["replyto"]; ?>" size="43" style="width:272px;height:24px;" />
+			</label>
+		</td>
+	</tr>
+	<tr valign="top">
+		<th scope="row">
 			<h3><?php _e('SMTP Options','my-smtp-mail'); ?></h3>
 		</th>
 	</tr>
